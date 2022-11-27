@@ -1,18 +1,20 @@
+import Location from "./Location";
+
 export function drawCircle(
     canvas: CanvasRenderingContext2D,
-    x: number, y: number, r: number) {
+    location: Location, r: number) {
     const circle = new Path2D();
-    circle.arc(x, y, r, 0, 2 * Math.PI);
+    circle.arc(location.x, location.y, r, 0, 2 * Math.PI);
     canvas.fill(circle);
     canvas.stroke(circle);
 }
 
 export function drawLine(
     canvas: CanvasRenderingContext2D,
-    fromX: number, fromY: number,
-    toX: number, toY: number) {
+    from: Location,
+    to: Location) {
         const line = new Path2D();
-        line.moveTo(fromX, fromY);
-        line.lineTo(toX, toY);
+        line.moveTo(from.x, from.y);
+        line.lineTo(to.x, to.y);
         canvas.stroke(line);
 }

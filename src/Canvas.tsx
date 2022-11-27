@@ -16,6 +16,7 @@ const Canvas = () => {
         //https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
         //youtube.com/watch?v=K8HICLm-Jj0
         // https://codepen.io/chengarda/pen/wRxoyB
+        // https://www.swilliams.io/w/react-on-itch/
         const canvas = canvasRef.current;
         if(!canvas) return;
 
@@ -35,30 +36,28 @@ const Canvas = () => {
         if(!context) return;
         const hasPrevious = previousLocation.x >= 0 && previousLocation.y >= 0;
         if(hasPrevious) {
-            drawLine(context, previousLocation.x, previousLocation.y, currentLocation.x, currentLocation.y);
-            drawCircle(context, currentLocation.x, currentLocation.y, 25);
+            drawLine(context, previousLocation, currentLocation);
+            drawCircle(context, previousLocation, 25);
         }
-        drawCircle(context, currentLocation.x, currentLocation.y, 25);
+        drawCircle(context, currentLocation, 25);
 
-    }, [currentLocation]);
+    }, [currentLocation, context, previousLocation]);
 
     function onPointerDown(e : MouseEvent) {
-        /*isDragging = true
-        dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
-        dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y*/
+        drawNewCircleAtPosition(e);
         setPreviousLocation(currentLocation);
         const pointerLocation = getEventLocation(e);
         setCurrentLocation(pointerLocation);
     }
 
     function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
-        /*if ( e.touches.length == 1 ) {
-            singleTouchHandler(e)
-        }
-        else if (e.type == "touchmove" && e.touches.length == 2) {
-            isDragging = false
-            handlePinch(e)
-        }*/
+        
+    }
+
+    function drawNewCircleAtPosition(e : MouseEvent) {
+        setPreviousLocation(currentLocation);
+        const pointerLocation = getEventLocation(e);
+        setCurrentLocation(pointerLocation);
     }
 
     return <canvas 
