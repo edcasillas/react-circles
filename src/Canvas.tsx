@@ -8,6 +8,7 @@ const Canvas = () => {
     const [locations, setLocations] = useState<Location[]>([]);
     const [clicks, setClicks] = useState(0);
     const [debugLocation, setDebugLocation] = useState<Location>({x: 0, y: 0});
+    const [context, setContext] = useState<CanvasRenderingContext2D | undefined>(undefined);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -21,34 +22,37 @@ const Canvas = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        //canvas.addEventListener('mousedown', onPointerDown);
-        //canvas.addEventListener('touchstart', (e) => handleTouch(e, onPointerDown))
+        const ctx = canvas.getContext('2d');
+        if(!ctx) return;
 
-        const context = canvas.getContext('2d');
-        if(!context) return;
+        ctx.fillStyle = 'blue';
 
-        context.fillStyle = 'blue';
+        drawLine(ctx, 100,35,200,55);
+        drawCircle(ctx, 100, 35, 10);
+        drawCircle(ctx, 200, 55, 10);
 
-        drawLine(context, 100,35,200,55);
-        drawCircle(context, 100, 35, 10);
-        drawCircle(context, 200, 55, 10);
+        setContext(ctx);
         
     }, []);
 
     useEffect(()=> {
         console.log('useEffect: clicked ' + clicks + ' times');
-    }, [clicks]);
+        console.log(debugLocation);
+
+        if(context) {
+            drawCircle(context, debugLocation.x, debugLocation.y, 25);
+        }
+
+    }, [clicks, debugLocation]);
 
     function onPointerDown(e : MouseEvent) {
         /*isDragging = true
         dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
         dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y*/
         setClicks(clicks + 1);
-        /*const pointerLocation = getEventLocation(e);
-        console.log(pointerLocation);
-
+        
+        const pointerLocation = getEventLocation(e);
         setDebugLocation(pointerLocation);
-        console.log(debugLocation);*/
     }
 
     function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
