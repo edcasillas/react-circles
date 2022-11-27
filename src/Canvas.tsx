@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { draw } from "./figure-drawers";
-import { getEventLocation as getPointerLocation } from "./input-utils";
-import Location from "./Location";
+import { getPointerLocation } from "./input-utils";
+import Location, { addLocations, subtractLocations } from "./Location";
 
 const Canvas = () => {
     const [locations, setLocations] = useState<Location[]>([]);
@@ -40,27 +40,26 @@ const Canvas = () => {
 
     useEffect(()=>{
         if(!context) return;
-        console.log('drawing here');
         draw(context, locations);
     });
 
+    // Handle panning
     useEffect(()=> {
         if(!context) return;
-        console.log("View Offset changed:");
-        //console.log(viewOffset);
-        //context.translate(viewOffset.x, viewOffset.y);
+        const dragAmount = subtractLocations(dragEnd, dragStart);
+        setViewOffset(addLocations(viewOffset, dragAmount));
 
         context.translate(
-            dragEnd.x - dragStart.x,
-            dragEnd.y - dragStart.y
+            dragAmount.x,
+            dragAmount.y
         )
         setDragStart(dragEnd);
-
-        draw(context, locations);
-
-        //context.resetTransform();
-        //context.translate(-window.innerWidth / 2 + viewOffset.x, -window.innerHeight / 2 + viewOffset.y);
     }, [context, dragEnd]);
+
+    useEffect(()=> {
+        console.log('ViewOffset changed!');
+        console.log(viewOffset);
+    }, [viewOffset]);
 
     function addCircleAt(location: Location) {
         const newLocations = locations;
@@ -85,12 +84,6 @@ const Canvas = () => {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
             setDragEnd(pointerLocation);
-            /*setViewOffset(
-                {
-                    x: pointerLocation.x - dragStart.x,
-                    y: pointerLocation.y - dragStart.y
-                }
-            );*/
         }
     }
 

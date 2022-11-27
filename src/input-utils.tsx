@@ -3,7 +3,7 @@ import Location from "./Location";
 /**
  * Gets the relevant location from a mouse or single touch event
  */
-export function getEventLocation(e : MouseEvent | TouchEvent) : Location {
+export function getPointerLocation(e : MouseEvent | TouchEvent) : Location {
     if(e instanceof TouchEvent) {
         if (e.touches && e.touches.length === 1) {
             return { x:e.touches[0].clientX, y: e.touches[0].clientY }
