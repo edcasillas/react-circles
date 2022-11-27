@@ -1,11 +1,15 @@
 import React, { useRef } from 'react';
-import logo from './logo.svg';
 import './App.css';
 import Canvas from './Canvas';
+import { EffectExample } from './EffectExample';
+
 
 function App() {
   return (
-    <Canvas />
+    <div>
+      <EffectExample />
+      <Canvas />
+    </div>
   );
 }
 

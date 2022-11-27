@@ -1,14 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useRef } from "react";
 import { drawCircle, drawLine } from "./figure-drawers";
 import { getEventLocation } from "./input-utils";
-
-interface Location {
-    x: number;
-    y: number;
-}
+import Location from "./Location";
 
 const Canvas = () => {
+    const [locations, setLocations] = useState<Location[]>([]);
+    const [clicks, setClicks] = useState(0);
+    const [debugLocation, setDebugLocation] = useState<Location>({x: 0, y: 0});
+
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(()=> {
@@ -21,8 +21,8 @@ const Canvas = () => {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        canvas.addEventListener('mousedown', onPointerDown);
-        canvas.addEventListener('touchstart', (e) => handleTouch(e, onPointerDown))
+        //canvas.addEventListener('mousedown', onPointerDown);
+        //canvas.addEventListener('touchstart', (e) => handleTouch(e, onPointerDown))
 
         const context = canvas.getContext('2d');
         if(!context) return;
@@ -35,12 +35,20 @@ const Canvas = () => {
         
     }, []);
 
+    useEffect(()=> {
+        console.log('useEffect: clicked ' + clicks + ' times');
+    }, [clicks]);
+
     function onPointerDown(e : MouseEvent) {
         /*isDragging = true
         dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
         dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y*/
-        const pointerLocation = getEventLocation(e);
+        setClicks(clicks + 1);
+        /*const pointerLocation = getEventLocation(e);
         console.log(pointerLocation);
+
+        setDebugLocation(pointerLocation);
+        console.log(debugLocation);*/
     }
 
     function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
@@ -53,7 +61,11 @@ const Canvas = () => {
         }*/
     }
 
-    return <canvas ref={canvasRef} className={'main_canvas'} />;
+    return <canvas 
+                ref={canvasRef} 
+                className={'main_canvas'} 
+                onMouseDown={(e) => {onPointerDown(e.nativeEvent)}}
+                />;
 };
 
 export default Canvas;
