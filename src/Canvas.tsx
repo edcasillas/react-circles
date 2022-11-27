@@ -1,18 +1,18 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRef } from "react";
-import { drawCircle, drawLine } from "./figure-drawers";
-import { getEventLocation } from "./input-utils";
+import { draw } from "./figure-drawers";
+import { getEventLocation as getPointerLocation } from "./input-utils";
 import Location from "./Location";
 
 const Canvas = () => {
-    const [previousLocation, setPreviousLocation] = useState<Location>({x: -1, y: -1});
-    const [currentLocation, setCurrentLocation] = useState<Location>({x: -1, y: -1});
+    const [locations, setLocations] = useState<Location[]>([]);
 
     const [context, setContext] = useState<CanvasRenderingContext2D | undefined>(undefined);
 
     // Pan
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0});
+    const [viewOffset, setViewOffset] = useState<Location>( { x: window.innerWidth/2, y: window.innerHeight/2 });
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -31,40 +31,72 @@ const Canvas = () => {
         if(!ctx) return;
 
         ctx.fillStyle = 'blue';
+        //ctx.translate(-window.innerWidth / 2 + viewOffset.x, -window.innerHeight / 2 + viewOffset.y);
 
         setContext(ctx);
         
     }, []);
 
+    useEffect(()=>{
+        if(!context) return;
+        console.log('drawing here');
+        draw(context, locations);
+    });
+
     useEffect(()=> {
         if(!context) return;
-        const hasPrevious = previousLocation.x >= 0 && previousLocation.y >= 0;
-        if(hasPrevious) {
-            drawLine(context, previousLocation, currentLocation);
-            drawCircle(context, previousLocation, 25);
-        }
-        drawCircle(context, currentLocation, 25);
+        console.log("View Offset changed:");
+        console.log(viewOffset);
+        //context.resetTransform();
+        //context.translate(-window.innerWidth / 2 + viewOffset.x, -window.innerHeight / 2 + viewOffset.y);
+    }, [context, viewOffset]);
 
-    }, [currentLocation, context, previousLocation]);
+    function addCircleAt(location: Location) {
+        console.log("Called addCircleAt");
+        console.log(locations);
+        const newLocations = locations;
+        newLocations.push(location);
+        setLocations(newLocations);
+    }
 
     function onPointerDown(e : MouseEvent) {
-        drawNewCircleAtPosition(e);
+        const pointerLocation = getPointerLocation(e);
+
+        addCircleAt(pointerLocation);
+
+        setIsDragging(true);
+        setDragStart(pointerLocation);
     }
 
-    function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
-        
+    function onPointerUp(e : MouseEvent) {
+        setIsDragging(false);
     }
 
-    function drawNewCircleAtPosition(e : MouseEvent) {
-        setPreviousLocation(currentLocation);
-        const pointerLocation = getEventLocation(e);
-        setCurrentLocation(pointerLocation);
+    function onPointerMove(e: MouseEvent) {
+        if(isDragging) {
+            const pointerLocation = getPointerLocation(e);
+            setViewOffset(
+                {
+                    x: pointerLocation.x - dragStart.x,
+                    y: pointerLocation.y - dragStart.y
+                }
+            );
+        }
     }
 
     return <canvas 
                 ref={canvasRef} 
                 className={'main_canvas'} 
+
                 onMouseDown={(e) => {onPointerDown(e.nativeEvent)}}
+                // TODO onTouchStart
+                
+                onMouseUp={(e) => {onPointerUp(e.nativeEvent)}}
+                // TODO onTouchEnd
+
+                onMouseMove={(e)=>{onPointerMove(e.nativeEvent)}}
+                // TODO onTouchMove
+
                 />;
 };
 
