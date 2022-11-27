@@ -5,9 +5,9 @@ import { getEventLocation } from "./input-utils";
 import Location from "./Location";
 
 const Canvas = () => {
-    const [locations, setLocations] = useState<Location[]>([]);
-    const [clicks, setClicks] = useState(0);
-    const [debugLocation, setDebugLocation] = useState<Location>({x: 0, y: 0});
+    const [previousLocation, setPreviousLocation] = useState<Location>({x: -1, y: -1});
+    const [currentLocation, setCurrentLocation] = useState<Location>({x: -1, y: -1});
+
     const [context, setContext] = useState<CanvasRenderingContext2D | undefined>(undefined);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -27,32 +27,28 @@ const Canvas = () => {
 
         ctx.fillStyle = 'blue';
 
-        drawLine(ctx, 100,35,200,55);
-        drawCircle(ctx, 100, 35, 10);
-        drawCircle(ctx, 200, 55, 10);
-
         setContext(ctx);
         
     }, []);
 
     useEffect(()=> {
-        console.log('useEffect: clicked ' + clicks + ' times');
-        console.log(debugLocation);
-
-        if(context) {
-            drawCircle(context, debugLocation.x, debugLocation.y, 25);
+        if(!context) return;
+        const hasPrevious = previousLocation.x >= 0 && previousLocation.y >= 0;
+        if(hasPrevious) {
+            drawLine(context, previousLocation.x, previousLocation.y, currentLocation.x, currentLocation.y);
+            drawCircle(context, currentLocation.x, currentLocation.y, 25);
         }
+        drawCircle(context, currentLocation.x, currentLocation.y, 25);
 
-    }, [clicks, debugLocation]);
+    }, [currentLocation]);
 
     function onPointerDown(e : MouseEvent) {
         /*isDragging = true
         dragStart.x = getEventLocation(e).x/cameraZoom - cameraOffset.x
         dragStart.y = getEventLocation(e).y/cameraZoom - cameraOffset.y*/
-        setClicks(clicks + 1);
-        
+        setPreviousLocation(currentLocation);
         const pointerLocation = getEventLocation(e);
-        setDebugLocation(pointerLocation);
+        setCurrentLocation(pointerLocation);
     }
 
     function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
