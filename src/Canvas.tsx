@@ -10,6 +10,10 @@ const Canvas = () => {
 
     const [context, setContext] = useState<CanvasRenderingContext2D | undefined>(undefined);
 
+    // Pan
+    const [isDragging, setIsDragging] = useState(false);
+    const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0});
+
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useEffect(()=> {
@@ -45,9 +49,6 @@ const Canvas = () => {
 
     function onPointerDown(e : MouseEvent) {
         drawNewCircleAtPosition(e);
-        setPreviousLocation(currentLocation);
-        const pointerLocation = getEventLocation(e);
-        setCurrentLocation(pointerLocation);
     }
 
     function handleTouch(e : TouchEvent, singleTouchHandler : (this: HTMLCanvasElement, ev: MouseEvent) => any) {
