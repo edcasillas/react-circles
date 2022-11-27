@@ -12,7 +12,8 @@ const Canvas = () => {
     // Pan
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0});
-    const [viewOffset, setViewOffset] = useState<Location>( { x: window.innerWidth/2, y: window.innerHeight/2 });
+    const [dragEnd, setDragEnd] = useState<Location>({x: 0, y: 0});
+    const [viewOffset, setViewOffset] = useState<Location>( { x: 0, y: 0 });
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -31,7 +32,7 @@ const Canvas = () => {
         if(!ctx) return;
 
         ctx.fillStyle = 'blue';
-        //ctx.translate(-window.innerWidth / 2 + viewOffset.x, -window.innerHeight / 2 + viewOffset.y);
+        //ctx.translate(viewOffset.x, viewOffset.y);
 
         setContext(ctx);
         
@@ -46,14 +47,22 @@ const Canvas = () => {
     useEffect(()=> {
         if(!context) return;
         console.log("View Offset changed:");
-        console.log(viewOffset);
+        //console.log(viewOffset);
+        //context.translate(viewOffset.x, viewOffset.y);
+
+        context.translate(
+            dragEnd.x - dragStart.x,
+            dragEnd.y - dragStart.y
+        )
+        setDragStart(dragEnd);
+
+        draw(context, locations);
+
         //context.resetTransform();
         //context.translate(-window.innerWidth / 2 + viewOffset.x, -window.innerHeight / 2 + viewOffset.y);
-    }, [context, viewOffset]);
+    }, [context, dragEnd]);
 
     function addCircleAt(location: Location) {
-        console.log("Called addCircleAt");
-        console.log(locations);
         const newLocations = locations;
         newLocations.push(location);
         setLocations(newLocations);
@@ -75,12 +84,13 @@ const Canvas = () => {
     function onPointerMove(e: MouseEvent) {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
-            setViewOffset(
+            setDragEnd(pointerLocation);
+            /*setViewOffset(
                 {
                     x: pointerLocation.x - dragStart.x,
                     y: pointerLocation.y - dragStart.y
                 }
-            );
+            );*/
         }
     }
 
