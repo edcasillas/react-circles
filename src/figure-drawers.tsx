@@ -1,4 +1,4 @@
-import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, CIRCLE_RAD } from "./Constants";
+import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, CIRCLE_RAD, DEBUG_DRAW } from "./Constants";
 import Location from "./Location";
 
 export function drawCircle(
@@ -23,33 +23,31 @@ export function drawLine(
 export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location, zoom: number, zoomMultiplier: number) {
     canvas.scale(zoomMultiplier, zoomMultiplier);
 
-    // Clear everything because we are going to redraw
-    canvas.clearRect(
-        -viewOffset.x / zoom, 
-        -viewOffset.y / zoom, 
+    const clrZone = {
+        x: -viewOffset.x, 
+        y: -viewOffset.y, 
         
-        Math.max(window.innerWidth - viewOffset.x, window.innerWidth) / zoom, 
-        Math.max(window.innerHeight - viewOffset.y, window.innerHeight) / zoom);
+        w: Math.max(window.innerWidth / zoom - viewOffset.x, window.innerWidth / zoom), 
+        h: Math.max(window.innerHeight / zoom - viewOffset.y, window.innerHeight / zoom)
+    };
+
+    // Clear everything because we are going to redraw
+    canvas.clearRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
 
     // DEBUG -------------------------------------
-    canvas.font = `${48}px ${"courier"}`;
-    canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
+    if(DEBUG_DRAW) {
+        canvas.font = `${48}px ${"courier"}`;
+        canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
 
-    // Original rect
-    canvas.strokeStyle='green';
-    canvas.strokeRect(0,0,window.innerWidth / zoom, window.innerHeight / zoom);
+        // Original rect
+        canvas.strokeStyle='green';
+        canvas.strokeRect(0,0,window.innerWidth / zoom, window.innerHeight / zoom);
 
-    // Clear rect
-    canvas.strokeStyle='red';
-    canvas.strokeRect(
-        -viewOffset.x / zoom, 
-        -viewOffset.y / zoom, 
-        
-        Math.max(window.innerWidth - viewOffset.x, window.innerWidth) / zoom, 
-        Math.max(window.innerHeight - viewOffset.y, window.innerHeight) / zoom);
-
-    // -------------------------------------------
-
+        // Clear rect
+        canvas.strokeStyle='red';
+        canvas.strokeRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
+        console.log("Clear zone:" + JSON.stringify(clrZone) + ";\nzoom: " + zoom);
+    }
     
     canvas.strokeStyle = 'black'
 
