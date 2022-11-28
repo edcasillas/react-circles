@@ -83,8 +83,8 @@ const Canvas = () => {
 
     function getLocationInCanvas(location: Location) {
         return {
-            x: location.x / 1 - viewOffset.x,
-            y: location.y / 1 - viewOffset.y
+            x: location.x / zoom - viewOffset.x,
+            y: location.y / zoom - viewOffset.y
         }
     }
 
