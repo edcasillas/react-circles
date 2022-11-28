@@ -27,7 +27,8 @@ const Canvas = () => {
     const [indexBeingDragged, setIndexBeingDragged] = useState(-1);
 
     // Zoom
-    const [zoom, setZoom] = useState(1);
+    const [zoom, setZoom] = useState(1); // Current actual zoom
+    const [zoomMultiplier, setZoomMultiplier] = useState(1); // The amount that needs to be scaled to get the new desired zoom.
 
     // Initialization
     useEffect(()=> {
@@ -47,7 +48,8 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset, 1);
+        draw(context, locations, viewOffset, zoomMultiplier);
+        setZoomMultiplier(1);
     });
 
     // Handle panning/dragging
@@ -145,17 +147,20 @@ const Canvas = () => {
         if(isDragging || !ENABLE_ZOOM) return;
 
         let currentZoom = zoom;
-        
-        currentZoom += zoomAmount;
-        currentZoom = Math.min(currentZoom, MAX_ZOOM);
-        currentZoom = Math.max(currentZoom, MIN_ZOOM);
 
-        setZoom(currentZoom);
+        let newZoom = currentZoom + zoomAmount;
+        newZoom = Math.min(newZoom, MAX_ZOOM);
+        newZoom = Math.max(newZoom, MIN_ZOOM); 
+
+        let requestedMultiplier = newZoom / currentZoom;
+
+        setZoom(newZoom);
+        setZoomMultiplier(requestedMultiplier);
     }
 
     useEffect(()=>{
-        console.log("Current zoom: " + zoom);
-    }, [zoom])
+        console.log("Current zoom: " + zoom + "; Multiplier: " + zoomMultiplier);
+    }, [zoom, zoomMultiplier])
 
     return <canvas 
                 ref={canvasRef} 
