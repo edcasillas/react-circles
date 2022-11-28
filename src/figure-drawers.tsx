@@ -21,9 +21,23 @@ export function drawLine(
 }
 
 export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location) {
+    console.log("");
+    console.log("window");
+    console.log({x: window.innerWidth,y: window.innerHeight});
+    console.log("Offset");
+    console.log(viewOffset);
+    console.log("Will clear");
+    const clearEnd = {x:-viewOffset.x, y:0, w: Math.max(window.innerWidth - viewOffset.x, window.innerWidth),h: Math.max(window.innerHeight - viewOffset.y, window.innerHeight)};
+    console.log(clearEnd);
+    console.log("");
+
     canvas.clearRect(
+        -viewOffset.x, -viewOffset.y, 
+        Math.max(window.innerWidth - viewOffset.x, window.innerWidth), Math.max(window.innerHeight - viewOffset.y, window.innerHeight));
+
+    canvas.strokeRect(
         0, 0, 
-        window.innerWidth - viewOffset.x, window.innerHeight - viewOffset.y);
+        window.innerWidth, window.innerHeight);
 
     // First draw all the lines so they are below the circles
     for(let i = 1; i < locations.length; i++) {

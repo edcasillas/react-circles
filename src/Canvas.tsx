@@ -74,6 +74,11 @@ const Canvas = () => {
     }, [context, dragEnd]);
 
     function addCircleAt(location: Location) {
+        console.log("");
+        console.log("New Circle at")
+        console.log(location);
+        console.log("");
+
         const newLocations = locations;
         newLocations.push(location);
         setLocations(newLocations);
