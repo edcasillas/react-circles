@@ -1,4 +1,4 @@
-import { CIRCLE_RAD } from "./Constants";
+import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, CIRCLE_RAD } from "./Constants";
 import Location from "./Location";
 
 export function drawCircle(
@@ -31,12 +31,12 @@ export function draw(canvas: CanvasRenderingContext2D, locations: Location[], vi
         drawLine(canvas, locations[i-1], locations[i]);
     }
 
-    canvas.fillStyle = 'blue';
+    canvas.fillStyle = CIRCLE_COLOR;
     locations.forEach((location)=>{drawCircle(canvas, location)});
 
     // Draw the last circle again, but in red so the user knows where the next one is coming to
     if(locations.length > 0) {
-        canvas.fillStyle = 'red';
+        canvas.fillStyle = ACTIVE_CIRCLE_COLOR;
         drawCircle(canvas, locations[locations.length -1]);
     }
 }
