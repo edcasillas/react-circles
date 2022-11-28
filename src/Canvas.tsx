@@ -92,15 +92,14 @@ const Canvas = () => {
         const pointerLocation = getPointerLocation(e);
 
         setIsDragging(true);
-        setDragStart(pointerLocation);
-        setTotalDragStart(pointerLocation);
 
         let _shouldSpawnOnPointerUp = true;
 
-        // TODO GetLocationWithZoomAndOffset
         const pointerLocationInCanvas = getLocationInCanvas(pointerLocation);
+        setDragStart(pointerLocationInCanvas);
+        setTotalDragStart(pointerLocationInCanvas);
 
-        console.log("pointerLocation: " + JSON.stringify(pointerLocation) + "\npointerLocationInCanvas: " + JSON.stringify(pointerLocationInCanvas));
+        //console.log("pointerLocation: " + JSON.stringify(pointerLocation) + "\npointerLocationInCanvas: " + JSON.stringify(pointerLocationInCanvas));
 
         const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
         setIndexBeingDragged(colliderIndex);
@@ -124,15 +123,19 @@ const Canvas = () => {
     function onPointerMove(e: Event) {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
+            const pointerLocationInCanvas = getLocationInCanvas(pointerLocation);
 
             // Check if at any point of the panning operation the distance moved is greater than the spawning threshold, 
             // and in that case avoid a new circle to be created.
-            const distanceMoved = subtractLocations(pointerLocation, totalDragStart);
+            const distanceMoved = subtractLocations(pointerLocationInCanvas, totalDragStart);
+
+            //console.log("pointerLocation: " + JSON.stringify(pointerLocation) + "\npointerLocationInCanvas: " + JSON.stringify(pointerLocationInCanvas));
+
             if(Math.abs(distanceMoved.x) > dragThreshold.x || Math.abs(distanceMoved.y) > dragThreshold.y) {
                 setShouldSpawnOnPointerUp(false);
             }
 
-            setDragEnd(pointerLocation);
+            setDragEnd(pointerLocationInCanvas);
         }
     }
 
@@ -158,9 +161,9 @@ const Canvas = () => {
         setZoomMultiplier(requestedMultiplier);
     }
 
-    useEffect(()=>{
+    /*useEffect(()=>{
         console.log("Current zoom: " + zoom);
-    }, [zoom])
+    }, [zoom])*/
 
     return <canvas 
                 ref={canvasRef} 
