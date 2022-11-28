@@ -47,7 +47,7 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset);
+        draw(context, locations, viewOffset, zoom);
     });
 
     // Handle panning/dragging
@@ -80,6 +80,13 @@ const Canvas = () => {
         setLocations(newLocations);
     }
 
+    function getLocationInCanvas(location: Location) {
+        return {
+            x: location.x / zoom - viewOffset.x,
+            y: location.y / zoom - viewOffset.y
+        }
+    }
+
     function onPointerDown(e : Event) {
         const pointerLocation = getPointerLocation(e);
 
@@ -88,7 +95,9 @@ const Canvas = () => {
         setTotalDragStart(pointerLocation);
         setShouldSpawnOnPointerUp(true);
 
-        const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
+        // TODO GetLocationWithZoomAndOffset
+        const pointerLocationInCanvas = getLocationInCanvas(pointerLocation); //subtractLocations(pointerLocation, viewOffset);
+
         const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
         if(colliderIndex >= 0) {
             setIndexBeingDragged(colliderIndex);
@@ -103,7 +112,7 @@ const Canvas = () => {
 
         if(shouldSpawnOnPointerUp) {
             const pointerLocation = getPointerLocation(e);
-            const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
+            const pointerLocationInCanvas = getLocationInCanvas(pointerLocation); //subtractLocations(pointerLocation, viewOffset);
             addCircleAt(pointerLocationInCanvas);
         }
         setIndexBeingDragged(-1);

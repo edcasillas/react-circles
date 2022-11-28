@@ -20,7 +20,9 @@ export function drawLine(
         canvas.stroke(line);
 }
 
-export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location) {
+export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location, zoom: number) {
+    canvas.scale(zoom, zoom);
+
     // Clear everything because we are going to redraw
     canvas.clearRect(
         -viewOffset.x, -viewOffset.y, 
