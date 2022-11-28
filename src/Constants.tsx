@@ -1,0 +1,1 @@
+export const CIRCLE_RAD = 25;

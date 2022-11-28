@@ -19,3 +19,9 @@ export function subtractLocations(a : Location, b: Location) : Location {
         y: a.y - b.y
     };
 }
+
+export function distanceBetweenLocations(a: Location, b: Location) : number {
+    return Math.sqrt(
+        Math.pow(a.y-b.y,2) + Math.pow(a.x-b.x,2)
+    );
+}

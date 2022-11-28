@@ -1,10 +1,9 @@
+import { CIRCLE_RAD } from "./Constants";
 import Location from "./Location";
-
-const circleRadius = 25;
 
 export function drawCircle(
     canvas: CanvasRenderingContext2D,
-    location: Location, r: number = circleRadius) {
+    location: Location, r: number = CIRCLE_RAD ) {
     const circle = new Path2D();
     circle.arc(location.x, location.y, r, 0, 2 * Math.PI);
     canvas.fill(circle);

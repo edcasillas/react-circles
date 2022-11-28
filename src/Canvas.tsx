@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
+import { getColliderIndex } from "./collisions";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
@@ -72,6 +73,10 @@ const Canvas = () => {
         setDragStart(pointerLocation);
         setTotalDragStart(pointerLocation);
         setShouldSpawnOnPointerUp(true);
+
+        const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
+        const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
+        console.log("Collider index = " + colliderIndex);
     }
 
     function onPointerUp(e : MouseEvent) {
