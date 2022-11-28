@@ -21,8 +21,10 @@ export function drawLine(
         canvas.stroke(line);
 }
 
-export function draw(canvas: CanvasRenderingContext2D, locations: Location[]) {
-    canvas.clearRect(0, 0, window.innerWidth, window.innerHeight);
+export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location) {
+    canvas.clearRect(
+        0, 0, 
+        window.innerWidth - viewOffset.x, window.innerHeight - viewOffset.y);
 
     // First draw all the lines so they are below the circles
     for(let i = 1; i < locations.length; i++) {

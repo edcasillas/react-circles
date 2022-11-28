@@ -32,7 +32,6 @@ const Canvas = () => {
         if(!ctx) return;
 
         ctx.fillStyle = 'blue';
-        //ctx.translate(viewOffset.x, viewOffset.y);
 
         setContext(ctx);
         
@@ -40,7 +39,7 @@ const Canvas = () => {
 
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations);
+        draw(context, locations, viewOffset);
     });
 
     // Handle panning
@@ -56,12 +55,12 @@ const Canvas = () => {
         setDragStart(dragEnd);
     }, [context, dragEnd]);
 
-    useEffect(()=> {
-        console.log('ViewOffset changed!');
-        console.log(viewOffset);
-    }, [viewOffset]);
-
     function addCircleAt(location: Location) {
+        console.log("");
+        console.log("Location");
+        console.log(location);
+        console.log("");
+
         const newLocations = locations;
         newLocations.push(location);
         setLocations(newLocations);
