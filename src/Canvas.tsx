@@ -8,9 +8,11 @@ import Location, { addLocations, subtractLocations } from "./Location";
 const dragThreshold = {x:5, y: 5};
 
 const Canvas = () => {
-    const [locations, setLocations] = useState<Location[]>([]);
-
+    const [locations, setLocations] = useState<Location[]>([]); // Array with the position of each circle in the canvas
+    
+    // the canvas itself
     const [context, setContext] = useState<CanvasRenderingContext2D | undefined>(undefined);
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     // Pan
     const [isDragging, setIsDragging] = useState(false);
@@ -20,13 +22,11 @@ const Canvas = () => {
     const [viewOffset, setViewOffset] = useState<Location>( { x: 0, y: 0 });
     const [shouldSpawnOnPointerUp, setShouldSpawnOnPointerUp] = useState(true);
 
-    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    // Drag
+    const [indexBeingDragged, setIndexBeingDragged] = useState(-1);
 
+    // Initialization
     useEffect(()=> {
-        //https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Drawing_shapes
-        //youtube.com/watch?v=K8HICLm-Jj0
-        // https://codepen.io/chengarda/pen/wRxoyB
-        // https://www.swilliams.io/w/react-on-itch/
         const canvas = canvasRef.current;
         if(!canvas) return;
 
@@ -42,12 +42,13 @@ const Canvas = () => {
         
     }, []);
 
+    // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
         draw(context, locations, viewOffset);
     });
 
-    // Handle panning
+    // Handle panning/dragging
     useEffect(()=> {
         if(!context) return;
         const dragAmount = subtractLocations(dragEnd, dragStart);
@@ -76,7 +77,12 @@ const Canvas = () => {
 
         const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
         const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
-        console.log("Collider index = " + colliderIndex);
+        if(colliderIndex >= 0) {
+            setIndexBeingDragged(colliderIndex);
+            setShouldSpawnOnPointerUp(false);
+        } else {
+            setShouldSpawnOnPointerUp(true);
+        }
     }
 
     function onPointerUp(e : MouseEvent) {
@@ -93,6 +99,8 @@ const Canvas = () => {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
 
+            // Check if at any point of the panning operation the distance moved is greater than the spawning threshold, 
+            // and in that case avoid a new circle to be created.
             const distanceMoved = subtractLocations(pointerLocation, totalDragStart);
             if(Math.abs(distanceMoved.x) > dragThreshold.x || Math.abs(distanceMoved.y) > dragThreshold.y) {
                 setShouldSpawnOnPointerUp(false);

@@ -2,6 +2,7 @@ import { CIRCLE_RAD } from "./Constants";
 import Location, { distanceBetweenLocations } from "./Location";
 
 export function getColliderIndex(point: Location, circleLocations : Location[]) {
+    // Awful linear search :( for the quick&dirty demo though
     let minDistance = CIRCLE_RAD;
     let index = -1;
 
