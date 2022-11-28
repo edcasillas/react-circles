@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { getColliderIndex } from "./collisions";
+import { MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
@@ -24,6 +25,9 @@ const Canvas = () => {
 
     // Drag
     const [indexBeingDragged, setIndexBeingDragged] = useState(-1);
+
+    // Zoom
+    const [zoom, setZoom] = useState(1);
 
     // Initialization
     useEffect(()=> {
@@ -127,6 +131,22 @@ const Canvas = () => {
         // else the user is probably pinching; will get back to this later if I have time
     }
 
+    function adjustZoom(zoomAmount: number) {
+        if(isDragging) return;
+
+        let currentZoom = zoom;
+        
+        currentZoom += zoomAmount;
+        currentZoom = Math.min(currentZoom, MAX_ZOOM);
+        currentZoom = Math.max(currentZoom, MIN_ZOOM);
+
+        setZoom(currentZoom);
+    }
+
+    useEffect(()=>{
+        console.log("Current zoom: " + zoom);
+    }, [zoom])
+
     return <canvas 
                 ref={canvasRef} 
                 className={'main_canvas'} 
@@ -139,6 +159,8 @@ const Canvas = () => {
 
                 onMouseMove={(e)=>{onPointerMove(e.nativeEvent)}}
                 onTouchMove={(e)=>{handleTouch(e.nativeEvent, onPointerMove)}}
+
+                onWheel={(e)=>{adjustZoom(e.deltaY*SCROLL_SENSITIVITY)}}
 
                 />;
 };
