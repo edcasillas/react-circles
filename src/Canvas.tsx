@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
 import { getColliderIndex } from "./collisions";
-import { MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
+import { ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
@@ -69,7 +69,6 @@ const Canvas = () => {
                 dragAmount.y
             )
         }
-
         
         setDragStart(dragEnd);
     }, [context, dragEnd]);
@@ -93,18 +92,18 @@ const Canvas = () => {
         setIsDragging(true);
         setDragStart(pointerLocation);
         setTotalDragStart(pointerLocation);
-        setShouldSpawnOnPointerUp(true);
+
+        let _shouldSpawnOnPointerUp = true;
 
         // TODO GetLocationWithZoomAndOffset
         const pointerLocationInCanvas = getLocationInCanvas(pointerLocation); //subtractLocations(pointerLocation, viewOffset);
 
         const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
+        setIndexBeingDragged(colliderIndex);
         if(colliderIndex >= 0) {
-            setIndexBeingDragged(colliderIndex);
-            setShouldSpawnOnPointerUp(false);
-        } else {
-            setShouldSpawnOnPointerUp(true);
-        }
+            _shouldSpawnOnPointerUp = false;
+        } 
+        setShouldSpawnOnPointerUp(_shouldSpawnOnPointerUp);
     }
 
     function onPointerUp(e : Event) {
@@ -141,7 +140,7 @@ const Canvas = () => {
     }
 
     function adjustZoom(zoomAmount: number) {
-        if(isDragging) return;
+        if(isDragging || !ENABLE_ZOOM) return;
 
         let currentZoom = zoom;
         
