@@ -4,6 +4,8 @@ import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
 
+const dragThreshold = {x:5, y: 5};
+
 const Canvas = () => {
     const [locations, setLocations] = useState<Location[]>([]);
 
@@ -13,7 +15,9 @@ const Canvas = () => {
     const [isDragging, setIsDragging] = useState(false);
     const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0});
     const [dragEnd, setDragEnd] = useState<Location>({x: 0, y: 0});
+    const [totalDragStart, setTotalDragStart] = useState<Location>({x: 0, y: 0});
     const [viewOffset, setViewOffset] = useState<Location>( { x: 0, y: 0 });
+    const [shouldSpawnOnPointerUp, setShouldSpawnOnPointerUp] = useState(true);
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -56,11 +60,6 @@ const Canvas = () => {
     }, [context, dragEnd]);
 
     function addCircleAt(location: Location) {
-        console.log("");
-        console.log("Location");
-        console.log(location);
-        console.log("");
-
         const newLocations = locations;
         newLocations.push(location);
         setLocations(newLocations);
@@ -69,20 +68,31 @@ const Canvas = () => {
     function onPointerDown(e : MouseEvent) {
         const pointerLocation = getPointerLocation(e);
 
-        const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
-        addCircleAt(pointerLocationInCanvas);
-
         setIsDragging(true);
         setDragStart(pointerLocation);
+        setTotalDragStart(pointerLocation);
+        setShouldSpawnOnPointerUp(true);
     }
 
     function onPointerUp(e : MouseEvent) {
         setIsDragging(false);
+
+        if(shouldSpawnOnPointerUp) {
+            const pointerLocation = getPointerLocation(e);
+            const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
+            addCircleAt(pointerLocationInCanvas);
+        }
     }
 
     function onPointerMove(e: MouseEvent) {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
+
+            const distanceMoved = subtractLocations(pointerLocation, totalDragStart);
+            if(Math.abs(distanceMoved.x) > dragThreshold.x || Math.abs(distanceMoved.y) > dragThreshold.y) {
+                setShouldSpawnOnPointerUp(false);
+            }
+
             setDragEnd(pointerLocation);
         }
     }
