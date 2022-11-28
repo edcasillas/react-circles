@@ -47,7 +47,7 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset, zoom);
+        draw(context, locations, viewOffset, 1);
     });
 
     // Handle panning/dragging
@@ -81,8 +81,8 @@ const Canvas = () => {
 
     function getLocationInCanvas(location: Location) {
         return {
-            x: location.x / zoom - viewOffset.x,
-            y: location.y / zoom - viewOffset.y
+            x: location.x / 1 - viewOffset.x,
+            y: location.y / 1 - viewOffset.y
         }
     }
 
@@ -96,7 +96,9 @@ const Canvas = () => {
         let _shouldSpawnOnPointerUp = true;
 
         // TODO GetLocationWithZoomAndOffset
-        const pointerLocationInCanvas = getLocationInCanvas(pointerLocation); //subtractLocations(pointerLocation, viewOffset);
+        const pointerLocationInCanvas = getLocationInCanvas(pointerLocation);
+
+        console.log("pointerLocation: " + JSON.stringify(pointerLocation) + "\npointerLocationInCanvas: " + JSON.stringify(pointerLocationInCanvas));
 
         const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
         setIndexBeingDragged(colliderIndex);

@@ -28,6 +28,18 @@ export function draw(canvas: CanvasRenderingContext2D, locations: Location[], vi
         -viewOffset.x, -viewOffset.y, 
         Math.max(window.innerWidth - viewOffset.x, window.innerWidth), Math.max(window.innerHeight - viewOffset.y, window.innerHeight));
 
+    // DEBUG -------------------------------------
+    canvas.font = `${48}px ${"courier"}`;
+    canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
+
+    canvas.strokeStyle='green';
+    canvas.strokeRect(0,0,window.innerWidth / zoom, window.innerHeight / zoom);
+
+    // -------------------------------------------
+
+    
+    canvas.strokeStyle = 'black;'
+
     // First draw all the lines so they are below the circles
     for(let i = 1; i < locations.length; i++) {
         drawLine(canvas, locations[i-1], locations[i]);
