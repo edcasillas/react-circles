@@ -36,8 +36,6 @@ const Canvas = () => {
         const ctx = canvas.getContext('2d');
         if(!ctx) return;
 
-        ctx.fillStyle = 'blue';
-
         setContext(ctx);
         
     }, []);
@@ -54,7 +52,6 @@ const Canvas = () => {
         const dragAmount = subtractLocations(dragEnd, dragStart);
 
         if(indexBeingDragged >= 0) {
-            console.log("dragging a circle: " + indexBeingDragged);
             const newLocations = locations;
             locations[indexBeingDragged] = {
                 x: locations[indexBeingDragged].x + dragAmount.x,
@@ -74,11 +71,6 @@ const Canvas = () => {
     }, [context, dragEnd]);
 
     function addCircleAt(location: Location) {
-        console.log("");
-        console.log("New Circle at")
-        console.log(location);
-        console.log("");
-
         const newLocations = locations;
         newLocations.push(location);
         setLocations(newLocations);

@@ -21,28 +21,22 @@ export function drawLine(
 }
 
 export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location) {
-    console.log("");
-    console.log("window");
-    console.log({x: window.innerWidth,y: window.innerHeight});
-    console.log("Offset");
-    console.log(viewOffset);
-    console.log("Will clear");
-    const clearEnd = {x:-viewOffset.x, y:0, w: Math.max(window.innerWidth - viewOffset.x, window.innerWidth),h: Math.max(window.innerHeight - viewOffset.y, window.innerHeight)};
-    console.log(clearEnd);
-    console.log("");
-
+    // Clear everything because we are going to redraw
     canvas.clearRect(
         -viewOffset.x, -viewOffset.y, 
         Math.max(window.innerWidth - viewOffset.x, window.innerWidth), Math.max(window.innerHeight - viewOffset.y, window.innerHeight));
-
-    canvas.strokeRect(
-        0, 0, 
-        window.innerWidth, window.innerHeight);
 
     // First draw all the lines so they are below the circles
     for(let i = 1; i < locations.length; i++) {
         drawLine(canvas, locations[i-1], locations[i]);
     }
 
+    canvas.fillStyle = 'blue';
     locations.forEach((location)=>{drawCircle(canvas, location)});
+
+    // Draw the last circle again, but in red so the user knows where the next one is coming to
+    if(locations.length > 0) {
+        canvas.fillStyle = 'red';
+        drawCircle(canvas, locations[locations.length -1]);
+    }
 }
