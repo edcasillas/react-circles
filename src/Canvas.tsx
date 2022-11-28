@@ -70,7 +70,8 @@ const Canvas = () => {
     function onPointerDown(e : MouseEvent) {
         const pointerLocation = getPointerLocation(e);
 
-        addCircleAt(pointerLocation);
+        const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
+        addCircleAt(pointerLocationInCanvas);
 
         setIsDragging(true);
         setDragStart(pointerLocation);
