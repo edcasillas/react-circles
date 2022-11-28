@@ -76,7 +76,7 @@ const Canvas = () => {
         setLocations(newLocations);
     }
 
-    function onPointerDown(e : MouseEvent) {
+    function onPointerDown(e : Event) {
         const pointerLocation = getPointerLocation(e);
 
         setIsDragging(true);
@@ -94,7 +94,7 @@ const Canvas = () => {
         }
     }
 
-    function onPointerUp(e : MouseEvent) {
+    function onPointerUp(e : Event) {
         setIsDragging(false);
 
         if(shouldSpawnOnPointerUp) {
@@ -105,7 +105,7 @@ const Canvas = () => {
         setIndexBeingDragged(-1);
     }
 
-    function onPointerMove(e: MouseEvent) {
+    function onPointerMove(e: Event) {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
 
@@ -120,18 +120,25 @@ const Canvas = () => {
         }
     }
 
+    function handleTouch(e: TouchEvent, singleTouchHandler: (ev: Event) => void) {
+        if(e.touches.length === 1) {
+            singleTouchHandler(e);
+        } 
+        // else the user is probably pinching; will get back to this later if I have time
+    }
+
     return <canvas 
                 ref={canvasRef} 
                 className={'main_canvas'} 
 
                 onMouseDown={(e) => {onPointerDown(e.nativeEvent)}}
-                // TODO onTouchStart
+                onTouchStart={(e) => {handleTouch(e.nativeEvent, onPointerDown)}}
                 
                 onMouseUp={(e) => {onPointerUp(e.nativeEvent)}}
-                // TODO onTouchEnd
+                onTouchEnd={(e) => {handleTouch(e.nativeEvent, onPointerUp)}}
 
                 onMouseMove={(e)=>{onPointerMove(e.nativeEvent)}}
-                // TODO onTouchMove
+                onTouchMove={(e)=>{handleTouch(e.nativeEvent, onPointerMove)}}
 
                 />;
 };
