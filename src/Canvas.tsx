@@ -52,12 +52,24 @@ const Canvas = () => {
     useEffect(()=> {
         if(!context) return;
         const dragAmount = subtractLocations(dragEnd, dragStart);
-        setViewOffset(addLocations(viewOffset, dragAmount));
 
-        context.translate(
-            dragAmount.x,
-            dragAmount.y
-        )
+        if(indexBeingDragged >= 0) {
+            console.log("dragging a circle: " + indexBeingDragged);
+            const newLocations = locations;
+            locations[indexBeingDragged] = {
+                x: locations[indexBeingDragged].x + dragAmount.x,
+                y: locations[indexBeingDragged].y + dragAmount.y
+            };
+            setLocations(newLocations);
+        } else {
+            setViewOffset(addLocations(viewOffset, dragAmount));
+            context.translate(
+                dragAmount.x,
+                dragAmount.y
+            )
+        }
+
+        
         setDragStart(dragEnd);
     }, [context, dragEnd]);
 
@@ -93,6 +105,7 @@ const Canvas = () => {
             const pointerLocationInCanvas = subtractLocations(pointerLocation, viewOffset);
             addCircleAt(pointerLocationInCanvas);
         }
+        setIndexBeingDragged(-1);
     }
 
     function onPointerMove(e: MouseEvent) {
