@@ -20,25 +20,38 @@ export function drawLine(
         canvas.stroke(line);
 }
 
-export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location, zoom: number) {
-    canvas.scale(zoom, zoom);
+export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location, zoom: number, zoomMultiplier: number) {
+    canvas.scale(zoomMultiplier, zoomMultiplier);
 
     // Clear everything because we are going to redraw
     canvas.clearRect(
-        -viewOffset.x, -viewOffset.y, 
-        Math.max(window.innerWidth - viewOffset.x, window.innerWidth), Math.max(window.innerHeight - viewOffset.y, window.innerHeight));
+        -viewOffset.x / zoom, 
+        -viewOffset.y / zoom, 
+        
+        Math.max(window.innerWidth - viewOffset.x, window.innerWidth) / zoom, 
+        Math.max(window.innerHeight - viewOffset.y, window.innerHeight) / zoom);
 
     // DEBUG -------------------------------------
     canvas.font = `${48}px ${"courier"}`;
     canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
 
+    // Original rect
     canvas.strokeStyle='green';
     canvas.strokeRect(0,0,window.innerWidth / zoom, window.innerHeight / zoom);
+
+    // Clear rect
+    canvas.strokeStyle='red';
+    canvas.strokeRect(
+        -viewOffset.x / zoom, 
+        -viewOffset.y / zoom, 
+        
+        Math.max(window.innerWidth - viewOffset.x, window.innerWidth) / zoom, 
+        Math.max(window.innerHeight - viewOffset.y, window.innerHeight) / zoom);
 
     // -------------------------------------------
 
     
-    canvas.strokeStyle = 'black;'
+    canvas.strokeStyle = 'black'
 
     // First draw all the lines so they are below the circles
     for(let i = 1; i < locations.length; i++) {

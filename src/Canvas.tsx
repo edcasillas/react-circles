@@ -48,7 +48,7 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset, zoomMultiplier);
+        draw(context, locations, viewOffset, zoom, zoomMultiplier);
         setZoomMultiplier(1);
     });
 
@@ -159,8 +159,8 @@ const Canvas = () => {
     }
 
     useEffect(()=>{
-        console.log("Current zoom: " + zoom + "; Multiplier: " + zoomMultiplier);
-    }, [zoom, zoomMultiplier])
+        console.log("Current zoom: " + zoom);
+    }, [zoom])
 
     return <canvas 
                 ref={canvasRef} 
