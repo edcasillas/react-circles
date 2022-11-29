@@ -30,20 +30,11 @@ export function draw(
     lastColor: string = ACTIVE_CIRCLE_COLOR,
     ) {
     
+    // Clear the screen
     canvas.resetTransform();
     canvas.clearRect(0, 0, window.innerWidth, window.innerHeight);
     canvas.translate(viewOffset.x, viewOffset.y);
     canvas.scale(zoom, zoom);
-
-    //canvas.scale(zoomMultiplier, zoomMultiplier);
-
-    const clrZone = {
-        x: -viewOffset.x / zoom, 
-        y: -viewOffset.y / zoom, 
-        
-        w: window.innerWidth / zoom, //Math.max(window.innerWidth / zoom - viewOffset.x, window.innerWidth / zoom), 
-        h: window.innerHeight / zoom //Math.max(window.innerHeight / zoom - viewOffset.y, window.innerHeight / zoom)
-    };
 
     // Clear everything because we are going to redraw
     //canvas.clearRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
@@ -66,13 +57,6 @@ export function draw(
         // Scaled rect
         canvas.strokeStyle='yellow';
         canvas.strokeRect(0,0,window.innerWidth, window.innerHeight);
-
-        // Clear rect
-        canvas.strokeStyle='red';
-        canvas.moveTo(clrZone.x, clrZone.y);
-        canvas.lineTo(clrZone.x + clrZone.w, clrZone.y + clrZone.h);
-        canvas.stroke();
-        canvas.strokeRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
     }
     
     canvas.strokeStyle = 'black'
