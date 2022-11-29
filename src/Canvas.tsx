@@ -145,6 +145,18 @@ const Canvas = () => {
         setIndexBeingDragged(-1);
     }
 
+    function onRightClickUp(e : Event) {
+        if(!context) return;
+        const pointerLocation = getPointerLocation(e);
+        const pointerLocationInCanvas = getLocationInCanvas(pointerLocation);
+        const colliderIndex = getColliderIndex(pointerLocationInCanvas, locations);
+        if(colliderIndex >= 0) {
+            locations.splice(colliderIndex, 1);
+            setLocations(locations);
+            draw(context, locations, viewOffset, zoom, defaultCircleColor, lastCircleColor); // Force redraw
+        }
+    }
+
     function onPointerMove(e: Event) {
         if(isDragging) {
             const pointerLocation = getPointerLocation(e);
@@ -204,13 +216,13 @@ const Canvas = () => {
                 ref={canvasRef} 
                 className={'main_canvas'} 
 
-                onMouseDown={(e) => {onPointerDown(e.nativeEvent)}}
+                onMouseDown={(e) => {if(e.button===0) onPointerDown(e.nativeEvent)}}
                 onTouchStart={(e) => {handleTouch(e.nativeEvent, onPointerDown)}}
                 
-                onMouseUp={(e) => {onPointerUp(e.nativeEvent)}}
+                onMouseUp={(e) => {if(e.button===0) onPointerUp(e.nativeEvent); else onRightClickUp(e.nativeEvent)}}
                 onTouchEnd={(e) => {handleTouch(e.nativeEvent, onPointerUp)}}
 
-                onMouseMove={(e)=>{onPointerMove(e.nativeEvent)}}
+                onMouseMove={(e)=>{if(e.button===0) onPointerMove(e.nativeEvent)}}
                 onTouchMove={(e)=>{handleTouch(e.nativeEvent, onPointerMove)}}
 
                 onWheel={(e)=>{adjustZoom(e.deltaY*SCROLL_SENSITIVITY)}}
