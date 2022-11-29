@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useRef } from "react";
 import CirclesApi from "./CirclesApi";
 import { getColliderIndex } from "./collisions";
-import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
+import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, ENABLE_CALL_TO_BACKEND, ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
@@ -39,8 +39,10 @@ const Canvas = () => {
     useEffect(()=> {
         if(context) return;
 
-        const api = new CirclesApi('http://127.0.0.1:1984');
-        api.GetData(onBackendResponse);
+        if(ENABLE_CALL_TO_BACKEND) {
+            const api = new CirclesApi('http://127.0.0.1:1984');
+            api.GetData(onBackendResponse);
+        }
 
         const canvas = canvasRef.current;
         if(!canvas) return;
@@ -55,10 +57,22 @@ const Canvas = () => {
         
     }, []);
 
+    useEffect(()=> {
+        function handleWindowResize() {
+            const canvas = canvasRef.current;
+            if(canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+        }
+        window.addEventListener('resize', handleWindowResize);
+    });
+
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
         draw(context, locations, viewOffset, zoom, zoomMultiplier, defaultCircleColor, lastCircleColor);
+        //if(canvasRef.current) console.log("Canvas w/h: " + JSON.stringify({w: canvasRef.current.width, h: canvasRef.current.height}));
         setZoomMultiplier(1);
     });
 

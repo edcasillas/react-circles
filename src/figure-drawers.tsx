@@ -32,11 +32,11 @@ export function draw(
     canvas.scale(zoomMultiplier, zoomMultiplier);
 
     const clrZone = {
-        x: -viewOffset.x, 
-        y: -viewOffset.y, 
+        x: -viewOffset.x / zoom, 
+        y: -viewOffset.y / zoom, 
         
-        w: Math.max(window.innerWidth / zoom - viewOffset.x, window.innerWidth / zoom), 
-        h: Math.max(window.innerHeight / zoom - viewOffset.y, window.innerHeight / zoom)
+        w: window.innerWidth / zoom, //Math.max(window.innerWidth / zoom - viewOffset.x, window.innerWidth / zoom), 
+        h: window.innerHeight / zoom //Math.max(window.innerHeight / zoom - viewOffset.y, window.innerHeight / zoom)
     };
 
     // Clear everything because we are going to redraw
@@ -44,6 +44,12 @@ export function draw(
 
     // DEBUG -------------------------------------
     if(DEBUG_DRAW) {
+        console.log("window: " + JSON.stringify({w: window.innerWidth, h: window.innerHeight}) + 
+                    "\nzoomed at " + zoom + " : " + JSON.stringify({w: window.innerWidth / zoom, h: window.innerHeight / zoom}) +
+                    "\nClear zone:" + JSON.stringify(clrZone) +
+                    "\nOffset:" + JSON.stringify({x: viewOffset, })
+                    );
+
         canvas.font = `${48}px ${"courier"}`;
         canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
 
@@ -53,8 +59,10 @@ export function draw(
 
         // Clear rect
         canvas.strokeStyle='red';
+        canvas.moveTo(clrZone.x, clrZone.y);
+        canvas.lineTo(clrZone.x + clrZone.w, clrZone.y + clrZone.h);
+        canvas.stroke();
         canvas.strokeRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
-        console.log("Clear zone:" + JSON.stringify(clrZone) + ";\nzoom: " + zoom);
     }
     
     canvas.strokeStyle = 'black'
