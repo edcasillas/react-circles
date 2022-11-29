@@ -20,7 +20,15 @@ export function drawLine(
         canvas.stroke(line);
 }
 
-export function draw(canvas: CanvasRenderingContext2D, locations: Location[], viewOffset : Location, zoom: number, zoomMultiplier: number) {
+export function draw(
+    canvas: CanvasRenderingContext2D, 
+    locations: Location[], 
+    viewOffset : Location, 
+    zoom: number, 
+    zoomMultiplier: number,
+    defaultColor: string = CIRCLE_COLOR,
+    lastColor: string = ACTIVE_CIRCLE_COLOR,
+    ) {
     canvas.scale(zoomMultiplier, zoomMultiplier);
 
     const clrZone = {
@@ -56,12 +64,12 @@ export function draw(canvas: CanvasRenderingContext2D, locations: Location[], vi
         drawLine(canvas, locations[i-1], locations[i]);
     }
 
-    canvas.fillStyle = CIRCLE_COLOR;
+    canvas.fillStyle = defaultColor;
     locations.forEach((location)=>{drawCircle(canvas, location)});
 
     // Draw the last circle again, but in red so the user knows where the next one is coming to
     if(locations.length > 0) {
-        canvas.fillStyle = ACTIVE_CIRCLE_COLOR;
+        canvas.fillStyle = lastColor;
         drawCircle(canvas, locations[locations.length -1]);
     }
 }

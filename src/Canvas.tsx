@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRef } from "react";
+import CirclesApi from "./CirclesApi";
 import { getColliderIndex } from "./collisions";
-import { ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
+import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
 import Location, { addLocations, subtractLocations } from "./Location";
@@ -30,8 +31,17 @@ const Canvas = () => {
     const [zoom, setZoom] = useState(1); // Current actual zoom
     const [zoomMultiplier, setZoomMultiplier] = useState(1); // The amount that needs to be scaled to get the new desired zoom.
 
+    // Circle coloring / fetch from backend
+    const [defaultCircleColor, setDefaultCircleColor] = useState(CIRCLE_COLOR);
+    const [lastCircleColor, setLastCircleColor] = useState(ACTIVE_CIRCLE_COLOR);
+
     // Initialization
     useEffect(()=> {
+        if(context) return;
+
+        const api = new CirclesApi('http://127.0.0.1:1984');
+        api.GetData(onBackendResponse);
+
         const canvas = canvasRef.current;
         if(!canvas) return;
 
@@ -48,7 +58,7 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset, zoom, zoomMultiplier);
+        draw(context, locations, viewOffset, zoom, zoomMultiplier, defaultCircleColor, lastCircleColor);
         setZoomMultiplier(1);
     });
 
@@ -161,9 +171,17 @@ const Canvas = () => {
         setZoomMultiplier(requestedMultiplier);
     }
 
+    function onBackendResponse(defaultColor: string, lastColor: string, greeting: string) {
+        console.log(defaultColor + ";" + lastColor + ";" + greeting);
+        setDefaultCircleColor(defaultColor);
+        setLastCircleColor(lastColor);
+    }
+
+    // DEBUG
     /*useEffect(()=>{
-        console.log("Current zoom: " + zoom);
-    }, [zoom])*/
+        console.log("defaultColor: " + defaultCircleColor);
+        console.log("LastCircleColor: " + lastCircleColor);
+    }, [defaultCircleColor, lastCircleColor])*/
 
     return <canvas 
                 ref={canvasRef} 
