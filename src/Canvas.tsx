@@ -5,7 +5,7 @@ import { getColliderIndex } from "./collisions";
 import { ACTIVE_CIRCLE_COLOR, CIRCLE_COLOR, ENABLE_CALL_TO_BACKEND, ENABLE_ZOOM, MAX_ZOOM, MIN_ZOOM, SCROLL_SENSITIVITY } from "./Constants";
 import { draw } from "./figure-drawers";
 import { getPointerLocation } from "./input-utils";
-import Location, { addLocations, subtractLocations } from "./Location";
+import Location, { addLocations, distanceBetweenLocations, subtractLocations } from "./Location";
 
 const dragThreshold = {x:5, y: 5};
 
@@ -56,6 +56,7 @@ const Canvas = () => {
         
     }, []);
 
+    // Just make sure everything goes smoothly if the window is resized.
     useEffect(()=> {
         function handleWindowResize() {
             const canvas = canvasRef.current;
@@ -77,6 +78,8 @@ const Canvas = () => {
     // Handle panning/dragging
     useEffect(()=> {
         if(!context) return;
+        if(distanceBetweenLocations(dragEnd, dragStart) === 0) return;
+
         const dragAmount = subtractLocations(dragEnd, dragStart);
 
         if(indexBeingDragged >= 0) {
@@ -87,7 +90,11 @@ const Canvas = () => {
             };
             setLocations(newLocations);
         } else {
-            setViewOffset(addLocations(viewOffset, dragAmount));
+            const scaledDragAmount = {
+                x: dragAmount.x * zoom,
+                y: dragAmount.y * zoom
+            };
+            setViewOffset(addLocations(viewOffset, scaledDragAmount));
         }
         
         setDragStart(dragEnd);
