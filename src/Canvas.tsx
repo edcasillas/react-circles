@@ -195,6 +195,11 @@ const Canvas = () => {
         console.log("LastCircleColor: " + lastCircleColor);
     }, [defaultCircleColor, lastCircleColor])*/
 
+    function preventContextMenu(e : MouseEvent) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
     return <canvas 
                 ref={canvasRef} 
                 className={'main_canvas'} 
@@ -209,6 +214,8 @@ const Canvas = () => {
                 onTouchMove={(e)=>{handleTouch(e.nativeEvent, onPointerMove)}}
 
                 onWheel={(e)=>{adjustZoom(e.deltaY*SCROLL_SENSITIVITY)}}
+
+                onContextMenu={(e) => { preventContextMenu(e.nativeEvent) }}
 
                 />;
 };
