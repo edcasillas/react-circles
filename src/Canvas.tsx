@@ -102,6 +102,9 @@ const Canvas = () => {
 
     function addCircleAt(location: Location) {
         const newLocations = locations;
+
+        // TODO Go to backend to get color
+
         newLocations.push(location);
         setLocations(newLocations);
     }

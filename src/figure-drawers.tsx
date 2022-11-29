@@ -57,7 +57,10 @@ export function draw(
     }
 
     canvas.fillStyle = defaultColor;
-    locations.forEach((location)=>{drawCircle(canvas, location)});
+    locations.forEach((location)=>{
+        // TODO canvas.fillStyle = location.color;
+        drawCircle(canvas, location)
+    });
 
     // Draw the last circle again, but in red so the user knows where the next one is coming to
     if(locations.length > 0) {

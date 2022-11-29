@@ -7,4 +7,4 @@ export const MIN_ZOOM = 0.1;
 
 export const ENABLE_ZOOM = true;
 export const DEBUG_DRAW = false;
-export const ENABLE_CALL_TO_BACKEND = false;
+export const ENABLE_CALL_TO_BACKEND = true;
