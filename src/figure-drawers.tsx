@@ -29,7 +29,13 @@ export function draw(
     defaultColor: string = CIRCLE_COLOR,
     lastColor: string = ACTIVE_CIRCLE_COLOR,
     ) {
-    canvas.scale(zoomMultiplier, zoomMultiplier);
+    
+    canvas.resetTransform();
+    canvas.clearRect(0, 0, window.innerWidth, window.innerHeight);
+    canvas.translate(viewOffset.x, viewOffset.y);
+    canvas.scale(zoom, zoom);
+
+    //canvas.scale(zoomMultiplier, zoomMultiplier);
 
     const clrZone = {
         x: -viewOffset.x / zoom, 
@@ -40,15 +46,15 @@ export function draw(
     };
 
     // Clear everything because we are going to redraw
-    canvas.clearRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
+    //canvas.clearRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
 
     // DEBUG -------------------------------------
     if(DEBUG_DRAW) {
-        console.log("window: " + JSON.stringify({w: window.innerWidth, h: window.innerHeight}) + 
+        /*console.log("window: " + JSON.stringify({w: window.innerWidth, h: window.innerHeight}) + 
                     "\nzoomed at " + zoom + " : " + JSON.stringify({w: window.innerWidth / zoom, h: window.innerHeight / zoom}) +
                     "\nClear zone:" + JSON.stringify(clrZone) +
                     "\nOffset:" + JSON.stringify({x: viewOffset, })
-                    );
+                    );*/
 
         canvas.font = `${48}px ${"courier"}`;
         canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
@@ -56,6 +62,10 @@ export function draw(
         // Original rect
         canvas.strokeStyle='green';
         canvas.strokeRect(0,0,window.innerWidth / zoom, window.innerHeight / zoom);
+
+        // Scaled rect
+        canvas.strokeStyle='yellow';
+        canvas.strokeRect(0,0,window.innerWidth, window.innerHeight);
 
         // Clear rect
         canvas.strokeStyle='red';

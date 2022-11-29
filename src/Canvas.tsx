@@ -90,10 +90,10 @@ const Canvas = () => {
             setLocations(newLocations);
         } else {
             setViewOffset(addLocations(viewOffset, dragAmount));
-            context.translate(
+            /*context.translate(
                 dragAmount.x,
                 dragAmount.y
-            )
+            )*/
         }
         
         setDragStart(dragEnd);
