@@ -6,5 +6,5 @@ export const MAX_ZOOM = 5;
 export const MIN_ZOOM = 0.1;
 
 export const ENABLE_ZOOM = false;
-export const DEBUG_DRAW = false;
+export const DEBUG_DRAW = true;
 export const ENABLE_CALL_TO_BACKEND = false;

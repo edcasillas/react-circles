@@ -29,7 +29,6 @@ const Canvas = () => {
 
     // Zoom
     const [zoom, setZoom] = useState(1); // Current actual zoom
-    const [zoomMultiplier, setZoomMultiplier] = useState(1); // The amount that needs to be scaled to get the new desired zoom.
 
     // Circle coloring / fetch from backend
     const [defaultCircleColor, setDefaultCircleColor] = useState(CIRCLE_COLOR);
@@ -71,9 +70,8 @@ const Canvas = () => {
     // Draw - every "update"/"tick"
     useEffect(()=>{
         if(!context) return;
-        draw(context, locations, viewOffset, zoom, zoomMultiplier, defaultCircleColor, lastCircleColor);
+        draw(context, locations, viewOffset, zoom, defaultCircleColor, lastCircleColor);
         //if(canvasRef.current) console.log("Canvas w/h: " + JSON.stringify({w: canvasRef.current.width, h: canvasRef.current.height}));
-        setZoomMultiplier(1);
     });
 
     // Handle panning/dragging
@@ -90,10 +88,6 @@ const Canvas = () => {
             setLocations(newLocations);
         } else {
             setViewOffset(addLocations(viewOffset, dragAmount));
-            /*context.translate(
-                dragAmount.x,
-                dragAmount.y
-            )*/
         }
         
         setDragStart(dragEnd);
@@ -107,8 +101,8 @@ const Canvas = () => {
 
     function getLocationInCanvas(location: Location) {
         return {
-            x: location.x / zoom - viewOffset.x,
-            y: location.y / zoom - viewOffset.y
+            x: (location.x - viewOffset.x) / zoom,
+            y: (location.y - viewOffset.y) / zoom
         }
     }
 
@@ -179,10 +173,7 @@ const Canvas = () => {
         newZoom = Math.min(newZoom, MAX_ZOOM);
         newZoom = Math.max(newZoom, MIN_ZOOM); 
 
-        let requestedMultiplier = newZoom / currentZoom;
-
         setZoom(newZoom);
-        setZoomMultiplier(requestedMultiplier);
     }
 
     function onBackendResponse(defaultColor: string, lastColor: string, greeting: string) {

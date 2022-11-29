@@ -24,8 +24,7 @@ export function draw(
     canvas: CanvasRenderingContext2D, 
     locations: Location[], 
     viewOffset : Location, 
-    zoom: number, 
-    zoomMultiplier: number,
+    zoom: number,
     defaultColor: string = CIRCLE_COLOR,
     lastColor: string = ACTIVE_CIRCLE_COLOR,
     ) {
@@ -36,17 +35,8 @@ export function draw(
     canvas.translate(viewOffset.x, viewOffset.y);
     canvas.scale(zoom, zoom);
 
-    // Clear everything because we are going to redraw
-    //canvas.clearRect(clrZone.x, clrZone.y, clrZone.w, clrZone.h);
-
     // DEBUG -------------------------------------
     if(DEBUG_DRAW) {
-        /*console.log("window: " + JSON.stringify({w: window.innerWidth, h: window.innerHeight}) + 
-                    "\nzoomed at " + zoom + " : " + JSON.stringify({w: window.innerWidth / zoom, h: window.innerHeight / zoom}) +
-                    "\nClear zone:" + JSON.stringify(clrZone) +
-                    "\nOffset:" + JSON.stringify({x: viewOffset, })
-                    );*/
-
         canvas.font = `${48}px ${"courier"}`;
         canvas.fillText("By Ed Casillas - Zoom: " + zoom, 0, 48);
 
