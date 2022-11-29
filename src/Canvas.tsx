@@ -29,10 +29,14 @@ const Canvas = () => {
 
     // Zoom
     const [zoom, setZoom] = useState(1); // Current actual zoom
+    const [prevZoom, setPrevZoom] = useState(1);
 
     // Circle coloring / fetch from backend
     const [defaultCircleColor, setDefaultCircleColor] = useState(CIRCLE_COLOR);
     const [lastCircleColor, setLastCircleColor] = useState(ACTIVE_CIRCLE_COLOR);
+
+    // Pinch
+    const [initialPinchDistance, setInitialPinchDistance] = useState<number | null>(null);
 
     // Initialization
     useEffect(()=> {
@@ -64,6 +68,7 @@ const Canvas = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
             }
+            if(context) draw(context, locations, viewOffset, zoom, defaultCircleColor, lastCircleColor); // Force redraw
         }
         window.addEventListener('resize', handleWindowResize);
     });
@@ -136,6 +141,8 @@ const Canvas = () => {
 
     function onPointerUp(e : Event) {
         setIsDragging(false);
+        setInitialPinchDistance(null);
+        setPrevZoom(zoom);
 
         if(shouldSpawnOnPointerUp) {
             const pointerLocation = getPointerLocation(e);
@@ -179,8 +186,29 @@ const Canvas = () => {
     function handleTouch(e: TouchEvent, singleTouchHandler: (ev: Event) => void) {
         if(e.touches.length === 1) {
             singleTouchHandler(e);
-        } 
+        } else {
+            if(e.type === "touchMove" && e.touches.length === 2) {
+                setIsDragging(false);
+                handlePinch(e);
+            }
+        }
         // else the user is probably pinching; will get back to this later if I have time
+    }
+
+    function handlePinch(e: TouchEvent) {
+        e.preventDefault();
+
+        let touch1 = { x: e.touches[0].clientX, y: e.touches[0].clientY }
+        let touch2 = { x: e.touches[1].clientX, y: e.touches[1].clientY }
+
+        // This is distance squared, but no need for an expensive sqrt as it's only used in ratio
+        let currentDistance = (touch1.x - touch2.x)**2 + (touch1.y - touch2.y)**2;
+
+        if(initialPinchDistance == null) {
+            setInitialPinchDistance(currentDistance);
+        } else {
+            adjustZoomWithPinchFactor(currentDistance / initialPinchDistance);
+        }
     }
 
     function adjustZoom(zoomAmount: number) {
@@ -193,6 +221,17 @@ const Canvas = () => {
         newZoom = Math.max(newZoom, MIN_ZOOM); 
 
         setZoom(newZoom);
+    }
+
+    function adjustZoomWithPinchFactor(pinchFactor : number) {
+        if(isDragging || !context || !ENABLE_ZOOM) return;
+
+        let newZoom = pinchFactor * prevZoom;
+        newZoom = Math.min(newZoom, MAX_ZOOM);
+        newZoom = Math.max(newZoom, MIN_ZOOM); 
+
+        setZoom(newZoom);
+        //draw(context, locations, viewOffset, newZoom, defaultCircleColor, lastCircleColor); // Force redraw
     }
 
     function onBackendResponse(defaultColor: string, lastColor: string, greeting: string) {
