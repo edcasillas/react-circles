@@ -18,10 +18,10 @@ const Canvas = () => {
 
     // Pan
     const [isDragging, setIsDragging] = useState(false);
-    const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0});
-    const [dragEnd, setDragEnd] = useState<Location>({x: 0, y: 0});
-    const [totalDragStart, setTotalDragStart] = useState<Location>({x: 0, y: 0});
-    const [viewOffset, setViewOffset] = useState<Location>( { x: 0, y: 0 });
+    const [dragStart, setDragStart] = useState<Location>({x: 0, y: 0, color: 'white'});
+    const [dragEnd, setDragEnd] = useState<Location>({x: 0, y: 0, color: 'white'});
+    const [totalDragStart, setTotalDragStart] = useState<Location>({x: 0, y: 0, color: 'white'});
+    const [viewOffset, setViewOffset] = useState<Location>( { x: 0, y: 0, color: 'white' });
     const [shouldSpawnOnPointerUp, setShouldSpawnOnPointerUp] = useState(true);
 
     // Drag
@@ -86,13 +86,15 @@ const Canvas = () => {
             const newLocations = locations;
             locations[indexBeingDragged] = {
                 x: locations[indexBeingDragged].x + dragAmount.x,
-                y: locations[indexBeingDragged].y + dragAmount.y
+                y: locations[indexBeingDragged].y + dragAmount.y,
+                color: locations[indexBeingDragged].color
             };
             setLocations(newLocations);
         } else {
             const scaledDragAmount = {
                 x: dragAmount.x * zoom,
-                y: dragAmount.y * zoom
+                y: dragAmount.y * zoom,
+                color: 'white'
             };
             setViewOffset(addLocations(viewOffset, scaledDragAmount));
         }
@@ -101,18 +103,24 @@ const Canvas = () => {
     }, [context, dragEnd]);
 
     function addCircleAt(location: Location) {
+        if(ENABLE_CALL_TO_BACKEND) {
+            const api = new CirclesApi('http://127.0.0.1:1984');
+            api.GetRandomColor((retrievedColor)=>{onRandomColorRetrieved(location, retrievedColor)});
+        }       
+    }
+
+    function onRandomColorRetrieved(location : Location, color: string) {
         const newLocations = locations;
-
-        // TODO Go to backend to get color
-
+        location.color = color;
         newLocations.push(location);
         setLocations(newLocations);
     }
 
-    function getLocationInCanvas(location: Location) {
+    function getLocationInCanvas(location: Location) : Location {
         return {
             x: (location.x - viewOffset.x) / zoom,
-            y: (location.y - viewOffset.y) / zoom
+            y: (location.y - viewOffset.y) / zoom,
+            color: "white"
         }
     }
 

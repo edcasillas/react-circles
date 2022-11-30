@@ -56,9 +56,8 @@ export function draw(
         drawLine(canvas, locations[i-1], locations[i]);
     }
 
-    canvas.fillStyle = defaultColor;
     locations.forEach((location)=>{
-        // TODO canvas.fillStyle = location.color;
+        canvas.fillStyle = location.color;
         drawCircle(canvas, location)
     });
 

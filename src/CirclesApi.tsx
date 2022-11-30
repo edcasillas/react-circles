@@ -23,4 +23,17 @@ export default class CirclesApi {
                 }
             );
     }
+
+    GetRandomColor(callback: (randomColor: string) => void) {
+        fetch(this.getUrl()).then(r=>r.json())
+            .then(
+                (response) => {
+                    callback(response["default-circle-color"]);
+                },
+                (err) => {
+                    console.log(err);
+                    callback("blue");
+                }
+            );
+    }
 }
